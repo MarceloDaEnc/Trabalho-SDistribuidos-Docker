@@ -2,7 +2,7 @@ import pika
 import time
 
 pecasNaFabrica = [20] * 100  # Inicializa a lista com 100 peças, cada uma com 20 unidades
-nfab = int(input("Digite o número da fábrica: "))
+nfab = 1
 
 def callback(ch, method, properties, body):
     msg = body.decode("utf-8")
@@ -34,8 +34,14 @@ def pedirPecas(pecas):
                           routing_key='fabricas',
                           body=f"fabrica/{nfab}/{pedido}")
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-channel = connection.channel()
+parameters = pika.ConnectionParameters("rabbitmq",5672,)
+while True:
+    try:
+        connection = pika.BlockingConnection(parameters)
+        hannel = connection.channel()
+    except pika.exceptions.AMQPConnectionError:
+        print("RabbitMQ not available yet, retrying in 5 seconds...")
+        time.sleep(5)
 
 channel.queue_declare(queue='fabrica')
 channel.queue_declare(queue='fabricas')

@@ -4,7 +4,7 @@ import time
 npecas = 10
 produto1 = [0, 1, 2, 3, 4, 5, 8, 9]
 pecasNaLinha = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-nlinha = int(input("Digite o número da linha: "))  # Converte a entrada para inteiro
+nlinha = 1
 
 def callback(ch, method, properties, body):
     msg = body.decode("utf-8")
@@ -44,8 +44,14 @@ def montarproduto(produto):
 def montarpedido(pedido):
     return montarproduto(pedido)
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-channel = connection.channel()
+parameters = pika.ConnectionParameters("rabbitmq",5672,)
+while True:
+    try:
+        connection = pika.BlockingConnection(parameters)
+        hannel = connection.channel()
+    except pika.exceptions.AMQPConnectionError:
+        print("RabbitMQ not available yet, retrying in 5 seconds...")
+        time.sleep(5)
 
 channel.queue_declare(queue='fabrica')
 

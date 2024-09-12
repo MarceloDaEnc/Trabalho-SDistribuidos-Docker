@@ -2,9 +2,8 @@ import pika
 import random
 import time
 
-ndeposito = int(input("Digite o número do depósito: "))
+ndeposito = 1
 
-##############
 class BufferEstoqueProdutos:
     def __init__(self, capacidade_maxima):
         self.produto = {}
@@ -49,7 +48,6 @@ def obter_quantia_produto(item):
     return buffer_estoque.obter_valor_atual(item)
 
 buffer_estoque = BufferEstoqueProdutos(capacidade_maxima=100)
-################
 
 def callback(ch, method, properties, body):
     msg = body.decode("utf-8")
@@ -62,8 +60,14 @@ def callback(ch, method, properties, body):
 def receberProduto(produto):
     buffer_estoque.check_in(1, "Pv" + produto)
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-channel = connection.channel()
+parameters = pika.ConnectionParameters("rabbitmq",5672,)
+while True:
+    try:
+        connection = pika.BlockingConnection(parameters)
+        hannel = connection.channel()
+    except pika.exceptions.AMQPConnectionError:
+        print("RabbitMQ not available yet, retrying in 5 seconds...")
+        time.sleep(5)
 
 channel.queue_declare(queue='linha')
 

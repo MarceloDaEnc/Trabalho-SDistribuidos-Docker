@@ -2,9 +2,8 @@ import pika
 import random
 import time
 
-nalmoxarifado = int(input("Digite o número do fornecedor: "))
+nalmoxarifado = 1
 
-#######
 class BufferEstoquePartes:
     def __init__(self, capacidade_maxima):
         self.parte = {}
@@ -48,8 +47,6 @@ def obter_quantia_parte(item):
     return buffer_estoque.obter_cor_estoque(item)
 
 buffer_estoque = BufferEstoquePartes(capacidade_maxima=200)
-##########################
-
 
 def callback(ch, method, properties, body):
     msg = body.decode("utf-8")
@@ -72,8 +69,14 @@ def solicitarReabastecimento(peca):
                           routing_key='fornecedor',
                           body=message)
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-channel = connection.channel()
+parameters = pika.ConnectionParameters("rabbitmq",5672,)
+while True:
+    try:
+        connection = pika.BlockingConnection(parameters)
+        hannel = connection.channel()
+    except pika.exceptions.AMQPConnectionError:
+        print("RabbitMQ not available yet, retrying in 5 seconds...")
+        time.sleep(5)
 
 channel.queue_declare(queue='fabrica')
 channel.queue_declare(queue='fornecedor')

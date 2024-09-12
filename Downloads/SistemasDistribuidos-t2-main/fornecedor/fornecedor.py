@@ -1,7 +1,7 @@
 import pika
 import time
 
-nfornecedor = int(input("Digite o número do fornecedor: "))
+nfornecedor = 1
 
 def callback(ch, method, properties, body):
     msg = body.decode("utf-8")
@@ -20,8 +20,14 @@ def enviarPecaAoAlmoxarifado(peca):
                           routing_key='almoxarifado',
                           body=message)
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-channel = connection.channel()
+parameters = pika.ConnectionParameters("rabbitmq",5672,)
+while True:
+    try:
+        connection = pika.BlockingConnection(parameters)
+        hannel = connection.channel()
+    except pika.exceptions.AMQPConnectionError:
+        print("RabbitMQ not available yet, retrying in 5 seconds...")
+        time.sleep(5)
 
 channel.queue_declare(queue='almoxarifado')
 

@@ -13,38 +13,48 @@ services:
 
     linha_producao_container:
         build:
-            context: C:\mosquitto\linha_producao
+            context: /home/lucca/desktop/distribuids/Trabalho-SDistribuidos-Docker/Downloads/SistemasDistribuidos-t2-main/linha_producao
             dockerfile: Dockerfile
         networks:
             - rabbitmq_network
+        depends_on:
+            - rabbitmq
 
     fabrica_container:
         build:
-            context: C:\mosquitto\fabrica
+            context: /home/lucca/desktop/distribuids/Trabalho-SDistribuidos-Docker/Downloads/SistemasDistribuidos-t2-main/fabrica
             dockerfile: Dockerfile
         networks:
             - rabbitmq_network
+        depends_on:
+            - rabbitmq
 
     fornecedor_container:
         build:
-            context: C:\mosquitto\fornecedor
+            context: /home/lucca/desktop/distribuids/Trabalho-SDistribuidos-Docker/Downloads/SistemasDistribuidos-t2-main/fornecedor
             dockerfile: Dockerfile_fornecedor
         networks:
             - rabbitmq_network
+        depends_on:
+            - rabbitmq
 
     almoxarifado_container:
         build:
-            context: C:\mosquitto\Almoxarifado
+            context: /home/lucca/desktop/distribuids/Trabalho-SDistribuidos-Docker/Downloads/SistemasDistribuidos-t2-main/Almoxarifado
             dockerfile: Dockerfile
         networks:
             - rabbitmq_network
+        depends_on:
+            - rabbitmq
 
     produto_container:
         build:
-            context: C:\mosquitto\produto
+            context: /home/lucca/desktop/distribuids/Trabalho-SDistribuidos-Docker/Downloads/SistemasDistribuidos-t2-main/produto
             dockerfile: Dockerfile
         networks:
             - rabbitmq_network
+        depends_on:
+            - rabbitmq
 
 volumes:
     rabbitmq_data:
